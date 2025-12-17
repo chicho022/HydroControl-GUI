@@ -35,6 +35,13 @@ def udp_listener():
 
         except:
             pass
+
+def send_control_mode():
+    mode = control_mode.get()
+    msg = f"MODE:{mode}".encode()
+    sock_tx.sendto(msg, (UDP_IP, UDP_PORT_TX))
+    status_label.config(text=f"Modo activo: {mode}")
+
 def update_plot():
     line.set_data(time_data, nivel_data)
     ax.relim()
@@ -50,6 +57,12 @@ root.geometry("900x600")
 root.minsize(800, 500)
 root.configure(bg="#EAF6FB")
 
+
+# ===============================
+# Variables globales
+# ===============================
+control_mode = tk.StringVar(value="PID")
+
 # ===============================
 style = ttk.Style()
 style.theme_use("default")
@@ -57,11 +70,6 @@ style.theme_use("default")
 style.configure(
     "Title.TLabel",
     font=("Segoe UI", 20, "bold")
-)
-
-style.configure(
-    "Panel.TFrame",
-    padding=15
 )
 
 style.configure(
@@ -170,9 +178,6 @@ panel_control = ttk.Frame(control, style="Panel.TFrame")
 panel_control.pack(expand=True)
 
 
-status_bar = ttk.Frame(root, style="Main.TFrame", padding=(10, 5))
-
-
 ttk.Label(
     panel_control,
     text="Pantalla de Control",
@@ -181,9 +186,28 @@ ttk.Label(
 
 ttk.Label(
     panel_control,
-    text="Operación e interrupción del sistema",
-    font=("Segoe UI", 12)
-).pack()
+    text="Modo de Control",
+    style="Text.TLabel"
+).pack(pady=(10, 5))
+
+radio_pid = ttk.Radiobutton(
+    panel_control,
+    text="Control PID",
+    variable=control_mode,
+    value="PID",
+    command=send_control_mode
+)
+radio_pid.pack(anchor="w", padx=20)
+
+radio_mpc = ttk.Radiobutton(
+    panel_control,
+    text="Control MPC",
+    variable=control_mode,
+    value="MPC",
+    command=send_control_mode
+)
+radio_mpc.pack(anchor="w", padx=20)
+
 
 frames["Control"] = control
 
