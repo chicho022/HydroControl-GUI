@@ -11,6 +11,7 @@ UDP_PORT_RX = 5005    # Puerto donde recibís nivel
 UDP_PORT_TX = 5006    # Puerto donde enviás comandos
 SP_MIN = 1.0   # cm
 SP_MAX = 24.0  # cm
+TOLERANCIA_SP = 0.5  # cm
 sock_rx = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock_rx.bind((UDP_IP, UDP_PORT_RX))
 
@@ -107,6 +108,29 @@ def update_plot():
         control_label.config(
             text=f"Control u: {u:.1f}  ({sentido})"
         )
+    # ----- Indicador de setpoint -----
+    if nivel_data:
+        nivel_actual = nivel_data[-1]
+        sp = setpoint_var.get()
+        error = abs(nivel_actual - sp)
+
+        if error <= TOLERANCIA_SP:
+            sp_status_label.config(
+                text="Estado SP: EN SETPOINT",
+                style="OK.TLabel"
+            )
+
+        elif error <= 2.0:
+            sp_status_label.config(
+                text="Estado SP: CERCA DEL SETPOINT",
+                style="WARN.TLabel"
+            )
+
+        else:
+            sp_status_label.config(
+                text="Estado SP: FUERA DE RANGO",
+                style="ERR.TLabel"
+            )
 
 
 
@@ -117,7 +141,8 @@ root = tk.Tk()
 root.title("HydraFlow - Control de Nivel y Flujo")
 root.geometry("900x600")
 root.minsize(800, 500)
-root.configure(bg="#EAF6FB")
+root.configure(bg="#E5E5E5")
+
 
 
 # ===============================
@@ -167,6 +192,13 @@ style.configure(
 )
 
 style.configure(
+    "Subtitle.TLabel",
+    font=("Segoe UI", 13),
+    background="#D6EEF8",
+    foreground="#1F5E88"
+)
+
+style.configure(
     "Status.TLabel",
     font=("Segoe UI", 10),
     background="#EAF6FB",
@@ -178,8 +210,31 @@ style.configure(
     font=("Segoe UI", 11),
     padding=8
 )
+style.configure(
+    "OK.TLabel",
+    font=("Segoe UI", 12, "bold"),
+    foreground="#1B8A3D",  # verde
+    background="#D6EEF8"
+)
+style.configure(
+    "Value.TLabel",
+    font=("Consolas", 12, "bold"),
+    background="#D6EEF8",
+    foreground="#0F3554"
+)
+style.configure(
+    "WARN.TLabel",
+    font=("Segoe UI", 12, "bold"),
+    foreground="#1E88E5",  # celeste
+    background="#D6EEF8"
+)
 
-
+style.configure(
+    "ERR.TLabel",
+    font=("Segoe UI", 12, "bold"),
+    foreground="#C62828",  # rojo
+    background="#D6EEF8"
+)
 # Contenedor principal
 
 container = ttk.Frame(root, style="Main.TFrame")
@@ -204,7 +259,8 @@ inicio = ttk.Frame(container)
 inicio.grid(row=0, column=0, sticky="nsew")
 
 panel_inicio = ttk.Frame(inicio, style="Panel.TFrame")
-panel_inicio.pack(expand=True)
+panel_inicio.pack(expand=True, padx=40, pady=20)
+
 
 ttk.Label(
     panel_inicio,
@@ -215,7 +271,7 @@ ttk.Label(
 ttk.Label(
     panel_inicio,
     text="Monitoreo general de nivel y flujo",
-    font=("Segoe UI", 12)
+    style="Subtitle.TLabel"
 ).pack()
 
 frames["Inicio"] = inicio
@@ -225,6 +281,14 @@ ax = fig.add_subplot(111)
 ax_ctrl = ax.twinx()
 ax_ctrl.set_ylabel("Control (u)")
 ax_ctrl.axhline(0, color="gray", linestyle=":", linewidth=1)
+ax.set_facecolor("#F3FAFD")
+ax_ctrl.set_facecolor("#F3FAFD")
+
+ax.tick_params(colors="#1F2D3D")
+ax_ctrl.tick_params(colors="#1F2D3D")
+
+ax.spines["top"].set_visible(False)
+ax_ctrl.spines["top"].set_visible(False)
 
 
 ax.set_title("Nivel del Tanque")
@@ -240,9 +304,19 @@ line_ctrl, = ax_ctrl.plot(
     lw=2,
     label="Control (u)"
 )
+line.set_color("#0F3554")        # nivel
+line_ctrl.set_color("#C62828")  # control
 ax_ctrl.set_ylabel("Control (u)")
 canvas = FigureCanvasTkAgg(fig, master=panel_inicio)
 canvas.get_tk_widget().pack(pady=10, fill="both", expand=True)
+
+
+sp_status_label = ttk.Label(
+    panel_inicio,
+    text="Estado SP: --",
+    style="Text.TLabel"
+)
+sp_status_label.pack(pady=(5, 0))
 
 control_label = ttk.Label(
     panel_inicio,
@@ -259,7 +333,8 @@ control_label.pack(pady=(5, 0))
 control = ttk.Frame(container)
 control.grid(row=0, column=0, sticky="nsew")
 panel_control = ttk.Frame(control, style="Panel.TFrame")
-panel_control.pack(expand=True)
+panel_control.pack(expand=True, padx=40, pady=20)
+
 
 
 ttk.Label(
@@ -285,7 +360,7 @@ radio_pid.pack(anchor="w", padx=20)
 
 radio_mpc = ttk.Radiobutton(
     panel_control,
-    text="Control MPC",
+    text="Control + Gain Scheduling",
     variable=control_mode,
     value="MPC",
     command=send_control_mode
@@ -334,13 +409,14 @@ log_text = tk.Text(
     width=70,
     state="disabled",
     wrap="word",
-    bg="#F5FAFF",
+    bg="#FFFFFF",
     fg="#1F2D3D",
     font=("Consolas", 10)
 )
 log_text.pack(pady=10, fill="both", expand=True)
+panel_diag.configure(style="Panel.TFrame")
+panel_diag.pack(expand=True, padx=40, pady=20)
 
-panel_diag.pack(expand=True)
 
 ttk.Label(
     panel_diag,
@@ -351,7 +427,7 @@ ttk.Label(
 ttk.Label(
     panel_diag,
     text="Estado de conexión, errores y alarmas",
-    font=("Segoe UI", 12)
+    style="Subtitle.TLabel"
 ).pack()
 
 frames["Diagnóstico"] = diagnostico
@@ -366,8 +442,7 @@ menu_vistas = tk.Menu(menu_bar, tearoff=0)
 menu_vistas.add_command(label="Inicio", command=lambda: show_frame("Inicio"))
 menu_vistas.add_command(label="Control", command=lambda: show_frame("Control"))
 menu_vistas.add_command(label="Diagnóstico", command=lambda: show_frame("Diagnóstico"))
-menu_bar.add_cascade(label="Vistas", menu=menu_vistas)
-
+menu_bar.add_cascade(label="Sistema", menu=menu_vistas)
 menu_bar.add_command(label="Salir", command=root.quit)
 
 # ===============================
@@ -382,6 +457,7 @@ status_label = ttk.Label(
     style="Status.TLabel"
 )
 status_label.pack(side="left")
+
 
 # ===============================
 # Mostrar pantalla inicial
