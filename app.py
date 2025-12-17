@@ -19,24 +19,10 @@ sock_tx = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 t0 = time.time()
 nivel_data = []
 time_data = []
-def udp_listener():
-    while True:
-        data, _ = sock_rx.recvfrom(1024)
-        try:
-            nivel = float(data.decode())
-            t = time.time() - t0
+control_data = []
 
-            nivel_data.append(nivel)
-            time_data.append(t)
 
-            if len(nivel_data) > 100:
-                nivel_data.pop(0)
-                time_data.pop(0)
 
-            root.after(0, update_plot)
-
-        except:
-            pass
 
 def send_control_mode():
     mode = control_mode.get()
@@ -61,13 +47,58 @@ def send_setpoint():
 
     except tk.TclError:
         status_label.config(text="Setpoint inválido (no numérico)")
+def udp_listener():
+    while True:
+        data, _ = sock_rx.recvfrom(1024)
+        try:
+            decoded = data.decode().strip()
+            nivel, control = map(float, decoded.split(","))
+
+            t = time.time() - t0
+
+            nivel_data.append(nivel)
+            control_data.append(control)
+            time_data.append(t)
+
+            if len(time_data) > 100:
+                nivel_data.pop(0)
+                control_data.pop(0)
+                time_data.pop(0)
+
+            root.after(0, update_plot)
+
+        except:
+            pass
 
 
 def update_plot():
     line.set_data(time_data, nivel_data)
+    line_ctrl.set_data(time_data, control_data)
+
     ax.relim()
     ax.autoscale_view()
+
+    ax_ctrl.relim()
+    ax_ctrl.autoscale_view()
+
     canvas.draw_idle()
+
+    # Actualizar valor numérico del control
+    if control_data:
+        u = control_data[-1]
+
+        if u > 0:
+            sentido = "Llenado"
+        elif u < 0:
+            sentido = "Vaciado"
+        else:
+            sentido = "Neutral"
+
+        control_label.config(
+            text=f"Control u: {u:.1f}  ({sentido})"
+        )
+
+
 
 # ===============================
 # Ventana principal
@@ -181,6 +212,10 @@ frames["Inicio"] = inicio
 # ----- Gráfica de nivel -----
 fig = Figure(figsize=(6, 4), dpi=100)
 ax = fig.add_subplot(111)
+ax_ctrl = ax.twinx()
+ax_ctrl.set_ylabel("Control (u)")
+ax_ctrl.axhline(0, color="gray", linestyle=":", linewidth=1)
+
 
 ax.set_title("Nivel del Tanque")
 ax.set_xlabel("Tiempo [s]")
@@ -188,8 +223,25 @@ ax.set_ylabel("Nivel [cm]")
 ax.grid(True)
 
 line, = ax.plot([], [], lw=2)
+line_ctrl, = ax_ctrl.plot(
+    [], [],
+    color="tab:red",
+    linestyle="--",
+    lw=2,
+    label="Control (u)"
+)
+ax_ctrl.set_ylabel("Control (u)")
 canvas = FigureCanvasTkAgg(fig, master=panel_inicio)
 canvas.get_tk_widget().pack(pady=10, fill="both", expand=True)
+
+control_label = ttk.Label(
+    panel_inicio,
+    text="Control u: -- (Neutral)",
+    style="Text.TLabel"
+)
+control_label.pack(pady=(5, 0))
+
+
 
 # ===============================
 # Pantalla: Control
