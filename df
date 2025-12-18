@@ -1,0 +1,83 @@
+[33mcommit 8522b87e61042ac9651c01d03306fd40f44e715f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: chicho022 <marcojaldinmendoza@gmail.com>
+Date:   Wed Dec 17 08:28:22 2025 -0400
+
+    Mejoras estéticas y de código
+
+[33mcommit badb30178db43867d8ce486aa90879e5c949c641[m
+Author: chicho022 <marcojaldinmendoza@gmail.com>
+Date:   Wed Dec 17 06:53:35 2025 -0400
+
+    Añadir logs y requerimientos terminados
+
+[33mcommit 4c13d5efa539ee077147844f0aff525799bf2615[m
+Author: chicho022 <marcojaldinmendoza@gmail.com>
+Date:   Wed Dec 17 06:41:23 2025 -0400
+
+    Señal cruda de control para seleccionar bomba
+
+[33mcommit f819df8bd45ef7dcfa5fca26a6601f2284cb4e6d[m
+Author: chicho022 <marcojaldinmendoza@gmail.com>
+Date:   Wed Dec 17 05:58:27 2025 -0400
+
+    rangos de set point (me olvide commit cuando añadi el añadir sp)
+
+[33mcommit 1eebf17523a10398db467124941842cae8fccb0a[m
+Author: chicho022 <marcojaldinmendoza@gmail.com>
+Date:   Wed Dec 17 05:43:04 2025 -0400
+
+    añadir boton mpc y pid
+
+[33mcommit a054a6691641220ceec54ecae9b41365d9f618a7[m
+Author: chicho022 <marcojaldinmendoza@gmail.com>
+Date:   Wed Dec 17 05:35:44 2025 -0400
+
+    primera correcion segun requerimientos
+
+[33mcommit 9b05ae3354470a6fc0d791134e98370bc3c5aa07[m
+Author: chicho022 <marcojaldinmendoza@gmail.com>
+Date:   Wed Dec 17 00:12:13 2025 -0400
+
+    conexion esp a stm
+
+[33mcommit b4b49cb463fc9740b3131e5e7714899912e133bf[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: chicho022 <marcojaldinmendoza@gmail.com>
+Date:   Fri Dec 12 14:40:30 2025 -0400
+
+    Correcion de colores
+
+[33mcommit b4d3c17b4c2dbc0b6fffdd9884ba84e2209b76cb[m
+Author: chicho022 <marcojaldinmendoza@gmail.com>
+Date:   Fri Dec 12 14:12:00 2025 -0400
+
+    Tabla Y udp con chat
+
+[33mcommit cd1954eff4e41556c7ed9d548793f6ac72c2d876[m
+Author: chicho022 <marcojaldinmendoza@gmail.com>
+Date:   Fri Dec 12 13:44:55 2025 -0400
+
+    Añadir estilos
+
+[33mcommit af743feb0b67ec3a41dddf9c4aa35a1208ab6e14[m
+Author: chicho022 <marcojaldinmendoza@gmail.com>
+Date:   Fri Dec 12 13:27:46 2025 -0400
+
+    cambio de pantallas definidas
+
+[33mcommit 7b852970e1ad5713bc6ba78acb69a4e3e2451a69[m
+Author: chicho022 <marcojaldinmendoza@gmail.com>
+Date:   Fri Dec 12 12:54:09 2025 -0400
+
+    añadir menú
+
+[33mcommit 558082e366e28723fe4fec3b7a59c868b2209d78[m
+Author: chicho022 <marcojaldinmendoza@gmail.com>
+Date:   Fri Dec 12 08:02:03 2025 -0400
+
+    priemra pantalla de GUI
+
+[33mcommit 74a5531e5de091702fda466ed1f97e98527b4ede[m
+Author: chicho022 <marcojaldinmendoza@gmail.com>
+Date:   Fri Dec 12 07:51:24 2025 -0400
+
+    crear archivo y subir a git
