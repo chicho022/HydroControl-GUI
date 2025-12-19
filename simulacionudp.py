@@ -2,7 +2,7 @@ import socket
 import time
 import math
 
-UDP_IP = "127.0.0.1"
+UDP_IP = "192.168.56.1"
 UDP_PORT_GUI = 5005     # GUI recibe aquí
 UDP_PORT_CMD = 5006     # GUI envía SP y modo
 
@@ -80,3 +80,4 @@ while True:
     sock_tx.sendto(msg.encode(), (UDP_IP, UDP_PORT_GUI))
 
     time.sleep(dt)
+w

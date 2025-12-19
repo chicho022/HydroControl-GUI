@@ -6,7 +6,7 @@ from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-UDP_IP = "127.0.0.1"   # Cambiar por IP del STM32
+UDP_IP = "192.168.56.1"   # Cambiar por IP del STM32
 UDP_PORT_RX = 5005    # Puerto donde recibís nivel
 UDP_PORT_TX = 5006    # Puerto donde enviás comandos
 SP_MIN = 1.0   # cm
