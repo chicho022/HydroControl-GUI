@@ -104,37 +104,51 @@ def update_plot():
         control_label.config(
             text=f"Control u: {u:.1f}  ({sentido})"
         )
-if time_data:
-    t_max = time_data[-1]
+    if time_data:
+        t_max = time_data[-1]
 
-    if t_max > AX_T_WINDOW:
-        ax.set_xlim(t_max - AX_T_WINDOW, t_max)
-    else:
-        ax.set_xlim(0, AX_T_WINDOW)
-
-    # ----- Indicador de setpoint -----
-    if nivel_data:
-        nivel_actual = nivel_data[-1]
-        sp = setpoint_var.get()
-        error = abs(nivel_actual - sp)
-
-        if error <= TOLERANCIA_SP:
-            sp_status_label.config(
-                text="Estado SP: EN SETPOINT",
-                style="OK.TLabel"
-            )
-
-        elif error <= 2.0:
-            sp_status_label.config(
-                text="Estado SP: CERCA DEL SETPOINT",
-                style="WARN.TLabel"
-            )
-
+        if t_max > AX_T_WINDOW:
+            ax.set_xlim(t_max - AX_T_WINDOW, t_max)
         else:
-            sp_status_label.config(
-                text="Estado SP: FUERA DE RANGO",
-                style="ERR.TLabel"
+            ax.set_xlim(0, AX_T_WINDOW)
+
+        # ----- Indicador de setpoint -----
+        if nivel_data:
+            nivel_actual = nivel_data[-1]
+            sp = setpoint_var.get()
+            error = abs(nivel_actual - sp)
+
+            if error <= TOLERANCIA_SP:
+                sp_status_label.config(
+                    text="Estado SP: EN SETPOINT",
+                    style="OK.TLabel"
+                )
+
+            elif error <= 2.0:
+                sp_status_label.config(
+                    text="Estado SP: CERCA DEL SETPOINT",
+                    style="WARN.TLabel"
+                )
+
+            else:
+                sp_status_label.config(
+                    text="Estado SP: FUERA DE RANGO",
+                    style="ERR.TLabel"
+                )
+                # ----- Nivel actual -----
+        if nivel_data:
+            nivel_actual = nivel_data[-1]
+            nivel_label.config(
+                text=f"Nivel actual: {nivel_actual:.2f} cm"
             )
+
+        # ----- Setpoint actual -----
+        sp = setpoint_var.get()
+        sp_value_label.config(
+            text=f"Setpoint: {sp:.2f} cm"
+)
+
+    
 
 
 
@@ -144,7 +158,7 @@ if time_data:
 root = tk.Tk()
 root.title("HydraFlow - Control de Nivel y Flujo")
 root.geometry("900x600")
-root.minsize(800, 500)
+root.minsize(1000,800)
 root.configure(bg="#E5E5E5")
 
 
@@ -277,10 +291,23 @@ ttk.Label(
     text="Monitoreo general de nivel y flujo",
     style="Subtitle.TLabel"
 ).pack()
+nivel_label = ttk.Label(
+    panel_inicio,
+    text="Nivel actual: -- cm",
+    style="Value.TLabel"
+)
+nivel_label.pack(pady=(5, 0))
+
+sp_value_label = ttk.Label(
+    panel_inicio,
+    text="Setpoint: -- cm",
+    style="Value.TLabel"
+)
+sp_value_label.pack(pady=(5, 0))
 
 frames["Inicio"] = inicio
 # ----- Gráfica de nivel -----
-fig = Figure(figsize=(6, 4), dpi=100)
+fig = Figure(figsize=(8, 5), dpi=100)
 ax = fig.add_subplot(111)
 ax_ctrl = ax.twinx()
 ax_ctrl.set_ylabel("Control (u)")
