@@ -88,12 +88,6 @@ def update_plot():
     line.set_data(time_data, nivel_data)
     line_ctrl.set_data(time_data, control_data)
 
-    ax.relim()
-    ax.autoscale_view()
-
-    ax_ctrl.relim()
-    ax_ctrl.autoscale_view()
-
     canvas.draw_idle()
 
     # Actualizar valor numérico del control
@@ -110,6 +104,9 @@ def update_plot():
         control_label.config(
             text=f"Control u: {u:.1f}  ({sentido})"
         )
+    if time_data:
+        t_max = time_data[-1]
+        ax.set_xlim(max(0, t_max - AX_T_WINDOW), t_max)
     # ----- Indicador de setpoint -----
     if nivel_data:
         nivel_actual = nivel_data[-1]
@@ -292,6 +289,17 @@ ax_ctrl.tick_params(colors="#1F2D3D")
 ax.spines["top"].set_visible(False)
 ax_ctrl.spines["top"].set_visible(False)
 
+# ===== Límites fijos =====
+AX_T_WINDOW = 30        # segundos visibles en X
+AX_NIVEL_MIN = 0
+AX_NIVEL_MAX = 26       # un poco más que 24 cm
+AX_CTRL_MIN = -255
+AX_CTRL_MAX = 255
+
+ax.set_ylim(AX_NIVEL_MIN, AX_NIVEL_MAX)
+ax_ctrl.set_ylim(AX_CTRL_MIN, AX_CTRL_MAX)
+
+ax.set_xlim(0, AX_T_WINDOW)
 
 ax.set_title("Nivel del Tanque")
 ax.set_xlabel("Tiempo [s]")
